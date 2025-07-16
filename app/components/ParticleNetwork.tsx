@@ -25,43 +25,44 @@ export default function ParticleNetwork() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size to match window size
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
     // Initialize particles
     const initParticles = () => {
       const particles: Particle[] = [];
-      const particleCount = 60;
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const radius = 150; // Initial cluster radius
+      const particleCount = 750; // Increased for better visibility
 
       for (let i = 0; i < particleCount; i++) {
-        const angle = (Math.PI * 2 * i) / particleCount;
-        const distance = Math.random() * radius;
-        const x = centerX + Math.cos(angle) * distance;
-        const y = centerY + Math.sin(angle) * distance;
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
         
         particles.push({
           x,
           y,
           baseX: x,
           baseY: y,
-          vx: (Math.random() - 0.5) * 0.2,
-          vy: (Math.random() - 0.5) * 0.2,
+          vx: 0,
+          vy: 0,
           angle: Math.random() * Math.PI * 2
         });
       }
 
       particlesRef.current = particles;
-      // Initialize mouse position to center
-      mouseRef.current = { x: centerX, y: centerY };
+      // Initialize mouse position to center of canvas
+      mouseRef.current = { 
+        x: canvas.width / 2, 
+        y: canvas.height / 2 
+      };
     };
+
+    // Set canvas size and handle resize
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles(); // Reinitialize particles on resize
+    };
+
+    // Initial setup
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
 
     // Update and draw particles
     const animate = () => {
@@ -84,13 +85,17 @@ export default function ParticleNetwork() {
         const mouseDistance = Math.sqrt(dx * dx + dy * dy);
         
         // Only show particles within radius of mouse
-        const mouseRadius = 200;
+        const mouseRadius = 150; // Increased radius
         const isInRange = mouseDistance < mouseRadius;
+        const fadeEdge = 40; // Increased fade edge for smoother transition
+        const opacity = isInRange ? 
+          Math.min(1, (mouseRadius - mouseDistance) / fadeEdge) : 0;
 
         if (isInRange) {
-          // Move towards mouse position
-          particle.vx = (dx / mouseDistance) * 0.5 + sporadicX;
-          particle.vy = (dy / mouseDistance) * 0.5 + sporadicY;
+          // Move towards mouse position with easing
+          const ease = 0.05; // Slower, smoother movement
+          particle.vx = (dx / mouseDistance) * ease + sporadicX * 0.2;
+          particle.vy = (dy / mouseDistance) * ease + sporadicY * 0.2;
           
           // Update position
           particle.x += particle.vx;
@@ -132,10 +137,10 @@ export default function ParticleNetwork() {
           }
         }
 
-          // Draw particle
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+          // Draw particle with opacity based on distance from mouse
+          ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
           ctx.beginPath();
-          ctx.arc(particle.x, particle.y, 0.8, 0, Math.PI * 2);
+          ctx.arc(particle.x, particle.y, 1.2, 0, Math.PI * 2); // Increased particle size
           ctx.fill();
 
           // Add subtle white glow

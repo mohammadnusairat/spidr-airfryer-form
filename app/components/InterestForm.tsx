@@ -54,8 +54,8 @@ export default function InterestForm() {
         boxShadow: '0 0 50px rgba(0, 180, 216, 0.08)',
       }}
     >
-      <h2 className="text-4xl font-extrabold text-center uppercase relative">
-        <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent" style={{ letterSpacing: '-0.03em' }}>
+      <h2 className="text-2xl font-light text-center relative">
+        <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent uppercase" style={{ letterSpacing: '0.25em', fontFamily: "'Arial', sans-serif" }}>
           Air Fryer Interest Form
         </span>
         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-transparent via-[#00b4d8] to-transparent rounded-full opacity-70"></div>
